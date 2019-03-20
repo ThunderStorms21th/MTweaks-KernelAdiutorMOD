@@ -648,8 +648,8 @@ public class SoundFragment extends RecyclerViewFragment {
     private void moroSoundInit(List<RecyclerViewItem> items) {
 
         mEqGain.clear();
-        boolean isSoundEnabled = MoroSound.isSoundSwEnabled();
-        boolean isEqEnabled = MoroSound.isEqSwEnabled();
+        final boolean[] isSoundEnabled = {MoroSound.isSoundSwEnabled()};
+        final boolean[] isEqEnabled = {MoroSound.isEqSwEnabled()};
 
         List<String> eqValues = MoroSound.getEqValues();
         List<String> eqLimit = MoroSound.getEqLimit();
@@ -669,9 +669,10 @@ public class SoundFragment extends RecyclerViewFragment {
             es.setTitle(getString(R.string.arizona_sound_sw));
             es.setSummaryOn(getString(R.string.enabled));
             es.setSummaryOff(getString(R.string.disabled));
-            es.setChecked(isSoundEnabled);
+            es.setChecked(isSoundEnabled[0]);
             es.addOnSwitchListener((switchView, isChecked) -> {
                 MoroSound.enableSoundSw(isChecked, getActivity());
+                isSoundEnabled[0] = isChecked;
                 getHandler().postDelayed(() -> {
                             // Refresh HP
                             hp.setEnabled(isChecked);
@@ -689,10 +690,10 @@ public class SoundFragment extends RecyclerViewFragment {
                             eqsw.setEnabled(isChecked);
                             eqsw.setChecked(MoroSound.isEqSwEnabled());
 
-                            eqprofile.setEnabled(isChecked);
+                            eqprofile.setEnabled(isChecked && isEqEnabled[0]);
 
                             for (int i = 0; i < 5; i++) {
-                                mEqGain.get(i).setEnabled(isChecked);
+                                mEqGain.get(i).setEnabled(isChecked && isEqEnabled[0]);
                             }
                         }
                         , 100);
@@ -710,7 +711,7 @@ public class SoundFragment extends RecyclerViewFragment {
             hp.setMin(0);
             hp.setMax(190);
             hp.setUnit(getString(R.string.db));
-            hp.setEnabled(isSoundEnabled);
+            hp.setEnabled(isSoundEnabled[0]);
             hp.setProgress(Utils.strToInt(MoroSound.getHeadphone()));
             hp.setOnSeekBarListener(new SeekBarView.OnSeekBarListener() {
                 @Override
@@ -731,7 +732,7 @@ public class SoundFragment extends RecyclerViewFragment {
             ep.setMin(0);
             ep.setMax(190);
             ep.setUnit(getString(R.string.db));
-            ep.setEnabled(isSoundEnabled);
+            ep.setEnabled(isSoundEnabled[0]);
             ep.setProgress(Utils.strToInt(MoroSound.getEarpiece()));
             ep.setOnSeekBarListener(new SeekBarView.OnSeekBarListener() {
                 @Override
@@ -751,7 +752,7 @@ public class SoundFragment extends RecyclerViewFragment {
             spk.setMin(0);
             spk.setMax(31);
             spk.setUnit(getString(R.string.db));
-            spk.setEnabled(isSoundEnabled);
+            spk.setEnabled(isSoundEnabled[0]);
             spk.setProgress(Utils.strToInt(MoroSound.getSpeaker()));
             spk.setOnSeekBarListener(new SeekBarView.OnSeekBarListener() {
                 @Override
@@ -777,10 +778,11 @@ public class SoundFragment extends RecyclerViewFragment {
             eqsw.setTitle(getString(R.string.arizona_eq_sw));
             eqsw.setSummaryOn(getString(R.string.enabled));
             eqsw.setSummaryOff(getString(R.string.disabled));
-            eqsw.setEnabled(isSoundEnabled);
+            eqsw.setEnabled(isSoundEnabled[0]);
             eqsw.setChecked(MoroSound.isEqSwEnabled());
             eqsw.addOnSwitchListener((switchView, isChecked) -> {
                 MoroSound.enableEqSw(isChecked, getActivity());
+                isEqEnabled[0] = isChecked;
                 eqprofile.setEnabled(isChecked);
                 for (int i = 0; i < 5; i++) {
                     mEqGain.get(i).setEnabled(isChecked);
@@ -790,7 +792,7 @@ public class SoundFragment extends RecyclerViewFragment {
 
             eqprofile.setTitle(getString(R.string.arizona_eqprofile_tit));
             eqprofile.setSummary(getString(R.string.arizona_eqprofile_desc));
-            eqprofile.setEnabled(isSoundEnabled & isEqEnabled);
+            eqprofile.setEnabled(isSoundEnabled[0] & isEqEnabled[0]);
             eqprofile.setItems(MoroSound.getEqProfileList());
             eqprofile.setItem(AppSettings.getInt("moro_eq_profile", 0, getActivity()));
             eqprofile.setOnItemSelected((selectView, position, item) -> {
@@ -812,7 +814,7 @@ public class SoundFragment extends RecyclerViewFragment {
                 SeekBarView eqgain = new SeekBarView();
                 eqgain.setTitle(names[i]);
                 eqgain.setSummary(descriptions[i]);
-                eqgain.setEnabled(isSoundEnabled & isEqEnabled);
+                eqgain.setEnabled(isSoundEnabled[0] & isEqEnabled[0]);
                 eqgain.setItems(eqLimit);
                 eqgain.setProgress(eqLimit.indexOf(eqValues.get(i)));
                 eqgain.setOnSeekBarListener(new SeekBarView.OnSeekBarListener() {
