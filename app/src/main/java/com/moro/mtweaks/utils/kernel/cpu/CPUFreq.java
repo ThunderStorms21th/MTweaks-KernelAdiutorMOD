@@ -95,7 +95,7 @@ public class CPUFreq {
         }
     }
 
-    public static boolean hasSoundSw(){
+    public boolean hasBigAllCoresMaxFreq(){
         return Utils.existFile(CPU_BIG_ALL_CORES_FULL);
     }
 

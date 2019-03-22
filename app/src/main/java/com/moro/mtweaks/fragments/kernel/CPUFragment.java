@@ -171,18 +171,20 @@ public class CPUFragment extends RecyclerViewFragment {
                 bigCores.get(bigCores.size() - 1), getActivity()));
         bigFrequenciesCard.addItem(mCPUMinBig);
 
-        SwitchView bigAll = new SwitchView();
-        bigAll.setTitle(getString(R.string.big_cores_max_title));
-        bigAll.setSummary(getString(R.string.big_cores_max_summary));
-        bigAll.setChecked(mCPUFreq.isBigAllCoresMaxFreq());
-        bigAll.addOnSwitchListener((switchView, isChecked) -> {
-            if(!isChecked) {
-                mCPUFreq.setMaxFreq(2288000, bigCores.get(0),
-                        bigCores.get(bigCores.size() - 1), getActivity());
-            }
-            mCPUFreq.enableBigAllCoresMaxFreq(isChecked, getActivity());
-        });
-        bigFrequenciesCard.addItem(bigAll);
+        if(mCPUFreq.hasBigAllCoresMaxFreq()) {
+            SwitchView bigAll = new SwitchView();
+            bigAll.setTitle(getString(R.string.big_cores_max_title));
+            bigAll.setSummary(getString(R.string.big_cores_max_summary));
+            bigAll.setChecked(mCPUFreq.isBigAllCoresMaxFreq());
+            bigAll.addOnSwitchListener((switchView, isChecked) -> {
+                if (!isChecked) {
+                    mCPUFreq.setMaxFreq(2288000, bigCores.get(0),
+                            bigCores.get(bigCores.size() - 1), getActivity());
+                }
+                mCPUFreq.enableBigAllCoresMaxFreq(isChecked, getActivity());
+            });
+            bigFrequenciesCard.addItem(bigAll);
+        }
 
 
         if (mCPUFreq.hasMaxScreenOffFreq()) {
